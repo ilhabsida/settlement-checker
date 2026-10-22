@@ -120,3 +120,14 @@
 - 실행에 필요한 오프라인 규정 PDF·페이지 이미지와 캐릭터 이미지는 포함합니다. 외부 자료의 출처·이용조건은 `THIRD_PARTY_NOTICES.md`를 확인하세요.
 - 실제 직원 정보·기관 내부자료·계정 정보는 GitHub에 올리지 마세요.
 - 이 저장소를 공개하는 것과 GitHub Pages 웹사이트를 게시하는 것은 별도 작업입니다.
+
+## Vercel 배포
+
+프레임워크와 빌드 과정이 없는 정적 HTML 앱으로 배포합니다. `vercel.json`에 설정이 포함되어 있으며, `.vercelignore`는 실행 파일과 공개 규정 사본만 배포하도록 제한합니다. `.vercel` 연결 설정과 로그인 정보는 GitHub 및 웹 배포에 포함하지 않습니다.
+
+```powershell
+vercel login
+vercel deploy --prod --yes --project settlement-checker --scope kuri16
+```
+
+웹사이트를 방문하면 HTML·JS·이미지·규정 사본을 내려받지만, 선택한 정산 엑셀의 검사·수정은 브라우저 안에서 처리합니다. 사이트 접속과 웹 리소스 로딩에는 인터넷이 필요하며, 인터넷이 없는 PC에서는 저장소 전체를 다운로드해 `index.html`로 실행하세요.

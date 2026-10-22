@@ -4,6 +4,8 @@
 
 !/.gitignore
 !/.gitattributes
+!/.vercelignore
+!/vercel.json
 !/index.html
 !/styles.css
 !/app.js
@@ -31,3 +33,6 @@
 !/복무규정/원문PDF/*.pdf
 !/복무규정/페이지/
 !/복무규정/페이지/*.png
+
+.vercel
+.env*
