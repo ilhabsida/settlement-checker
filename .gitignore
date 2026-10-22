@@ -1,0 +1,33 @@
+# 공개 저장소에는 검토한 배포 파일만 포함합니다.
+# 실제 정산자료, HWP/HWPX 원본, 계정 설정, 임시파일은 기본적으로 제외됩니다.
+*
+
+!/.gitignore
+!/.gitattributes
+!/index.html
+!/styles.css
+!/app.js
+!/effects.js
+!/formula-audit.js
+!/regulation-texts.js
+!/regulation-documents.js
+!/test-formula-audit.js
+!/README.md
+!/problem.md
+!/THIRD_PARTY_NOTICES.md
+!/실행하기.bat
+
+!/vendor/
+!/vendor/xlsx.full.min.js
+!/vendor/LICENSE.txt
+
+!/일러스트/
+!/일러스트/megane_hikaru_man.png
+!/일러스트/work_shigoto_osame_woman.png
+
+# 오프라인 원문 팝업을 위한 공개 규정의 PDF·페이지 사본
+!/복무규정/
+!/복무규정/원문PDF/
+!/복무규정/원문PDF/*.pdf
+!/복무규정/페이지/
+!/복무규정/페이지/*.png

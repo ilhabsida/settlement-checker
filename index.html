@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>정산 규정·금액 검증기</title>
+  <link rel="preload" as="image" href="일러스트/megane_hikaru_man.png">
+  <link rel="stylesheet" href="styles.css?v=20261022-mode-themes">
+</head>
+<body data-theme="osaka-jade">
+  <header class="topbar">
+    <div class="brand-wrap">
+      <div class="brand-mark" aria-hidden="true">✓</div>
+      <div>
+        <h1>정산 규정·금액 검증기</h1>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="rule-help" id="ruleHelp">
+        <button class="rule-help-button" id="ruleHelpButton" type="button" aria-expanded="false" aria-controls="ruleHelpPopup">
+          어떤 근거규정이 사용되었나요?
+        </button>
+        <aside class="rule-help-popup" id="ruleHelpPopup" role="dialog" aria-label="사용된 근거 규정" hidden>
+          <div class="popup-heading">
+            <span>적용 근거</span>
+            <strong>앱 기본 검증값의 출처</strong>
+          </div>
+          <ul>
+            <li>
+              <button class="offline-rule-link" type="button" data-regulation-document="travel18">공무원 여비 규정 제16조·제18조 · 저장 원문</button>
+              <p>근무지 내 공용차량은 1만원 감액, 근무지 외 공용차량은 일비의 2분의 1 지급</p>
+            </li>
+            <li>
+              <button class="offline-rule-link" type="button" data-regulation-document="table2">별표 2 국내 여비 지급표 · 저장 원문</button>
+              <p>일비·식비 1일 25,000원 및 제2호 숙박지역별 실비 상한 기준</p>
+            </li>
+            <li>
+              <button class="offline-rule-link" type="button" data-regulation-document="meal">2026년도 예산 및 기금운용계획 집행지침 1-5 · 저장 원문</button>
+              <p>특근 2시간 이상, 1인 1식 9천원 이내, 출장 식비 중복 제외 기준</p>
+            </li>
+            <li>
+              <button class="offline-rule-link" type="button" data-regulation-document="payGuide">공무원보수 등의 업무지침 · 저장 원문</button>
+              <p>공무원 여비업무 처리기준과 공용차량 이용 시 감액 등 세부 처리기준</p>
+            </li>
+          </ul>
+          <p class="popup-caution">기관 내부지침이 더 엄격할 수 있습니다. 실제 정산 전 최신 원문과 내부 기준을 확인하세요.</p>
+        </aside>
+      </div>
+      <div class="offline-badge"><span></span> 오프라인 처리</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="kicker">출장 · 초과근무 · 특근매식비</span>
+        <div class="hero-title-line">
+          <h2>정산 검증기</h2>
+          <img class="title-character" src="일러스트/work_shigoto_osame_woman.png" alt="서류를 정리하는 업무 담당자 캐릭터">
+        </div>
+        <p>엑셀은 외부로 전송되지 않습니다. 이 브라우저 안에서만 읽고 검사합니다.</p>
+      </div>
+      <ol class="flow" aria-label="검사 순서">
+        <li><b>1</b><span>정산 엑셀 선택</span></li>
+        <li><b>2</b><span>검사 범위 확인</span></li>
+        <li><b>3</b><span>누락 결과 저장</span></li>
+      </ol>
+    </section>
+
+    <section class="audit-mode-panel" aria-label="정산 검사 유형 선택">
+      <div class="audit-mode-switch" id="auditModeSwitch" role="tablist" aria-label="정산 유형" data-mode="travel">
+        <span class="audit-mode-slider" aria-hidden="true"></span>
+        <button id="travelAuditTab" type="button" role="tab" aria-selected="true" aria-controls="auditWorkspace" data-audit-mode="travel">출장비 정산</button>
+        <button id="mealAuditTab" type="button" role="tab" aria-selected="false" aria-controls="auditWorkspace" tabindex="-1" data-audit-mode="meal">특근매식비 정산</button>
+      </div>
+      <p id="auditModeHint" aria-live="polite">출장구분·출장시간·정산액·공용차량 이용 여부를 확인합니다.</p>
+    </section>
+
+    <div id="auditWorkspace" role="tabpanel" aria-labelledby="travelAuditTab">
+    <section class="panel upload-panel" id="uploadPanel">
+      <div class="section-heading">
+        <div><span class="step">01</span><h3 id="uploadTitle">특근매식비 정산 엑셀 불러오기</h3></div>
+        <button class="text-button" id="sampleButton" type="button">시험용 샘플 받기</button>
+      </div>
+
+      <label class="dropzone" id="dropzone" for="fileInput">
+        <input id="fileInput" type="file" accept=".xlsx,.xlsm,.xls,.xlsb" hidden>
+        <span class="upload-icon" aria-hidden="true">↑</span>
+        <strong id="uploadPrompt">특근매식비 파일을 끌어놓거나 눌러서 선택하세요</strong>
+        <small>지원 형식: XLSX, XLSM, XLS, XLSB · 파일은 서버로 전송되지 않음</small>
+      </label>
+
+      <div class="file-card hidden" id="fileCard">
+        <div class="file-icon">X</div>
+        <div class="file-meta">
+          <strong id="fileName"></strong>
+          <span id="fileInfo"></span>
+        </div>
+        <button class="icon-button" id="removeFileButton" type="button" aria-label="파일 제거">×</button>
+      </div>
+      <p class="error-message hidden" id="loadError" role="alert"></p>
+    </section>
+
+    <section class="panel hidden" id="settingsPanel">
+      <div class="section-heading">
+        <div><span class="step">02</span><h3 id="settingsTitle">특근매식비 검사 범위 확인</h3></div>
+        <span class="helper">자동으로 찾은 값을 실제 양식에 맞게 확인하세요.</span>
+      </div>
+
+      <div class="settings-grid">
+        <label>검사할 시트
+          <select id="sheetSelect"></select>
+        </label>
+        <label>제목 행
+          <input id="headerRowInput" type="number" min="1" value="1">
+        </label>
+        <label>첫 데이터 행
+          <input id="startRowInput" type="number" min="2" value="2">
+        </label>
+        <label>행 식별 기준 열
+          <select id="keyColumnSelect"></select>
+          <small>이 열에 값이 있는 행만 검사합니다.</small>
+        </label>
+      </div>
+
+      <div class="formula-box">
+        <div class="formula-title">
+          <div>
+            <strong>검사할 수식 열</strong>
+            <p>수식이 발견된 열을 자동 선택했습니다.</p>
+          </div>
+          <div class="formula-actions">
+            <button class="text-button" id="selectAllButton" type="button">전체 선택</button>
+            <button class="text-button muted" id="clearAllButton" type="button">전체 해제</button>
+          </div>
+        </div>
+        <div class="formula-columns" id="formulaColumns"></div>
+      </div>
+
+      <div class="rule-box">
+        <div class="rule-title">
+          <div>
+            <span class="priority-badge">핵심 검사</span>
+            <strong>규정상 지급대상·금액 다시 계산</strong>
+            <p id="ruleModeDescription">인정시간과 출장 식비 지급 여부를 기준으로 특근매식비 기대금액을 계산합니다.</p>
+          </div>
+          <label class="switch-label"><input id="ruleCheck" type="checkbox" checked> 규정 검증 사용</label>
+        </div>
+
+        <div class="travel-scope-controls hidden" data-mode-field="travel">
+          <label>국내출장 검사 범위
+            <select id="travelScopeSelect">
+              <option value="all">근무지 내·외 함께 검사 (행별 자동 구분)</option>
+              <option value="local">근무지 내 출장만</option>
+              <option value="external">근무지 외 출장만</option>
+            </select>
+          </label>
+          <p>출장구분 열에 ‘근무지내/근무지외’ 또는 ‘관내/관외’를 입력하세요. 주소만으로 내·외를 추정하지 않습니다.</p>
+        </div>
+
+        <div class="mapping-grid">
+          <label data-mode-field="meal">인정시간 열<select id="hoursColumnSelect"></select></label>
+          <label data-mode-field="meal">출장 식비 지급 여부 열<select id="travelMealColumnSelect"></select></label>
+          <label data-mode-field="meal">특근매식비 실제액 열<select id="specialAmountColumnSelect"></select></label>
+          <label data-mode-field="travel" class="hidden">출장구분 열<select id="tripTypeColumnSelect"></select></label>
+          <label data-mode-field="travel" data-travel-section="local" class="hidden">근무지 내 출장시간 열<select id="tripHoursColumnSelect"></select></label>
+          <label data-mode-field="travel" class="hidden">출장여비 실제액 열<select id="travelAmountColumnSelect"></select></label>
+          <label data-mode-field="travel" class="hidden">공용차량 이용 여부 열<select id="publicVehicleColumnSelect"></select></label>
+        </div>
+
+        <div class="rule-values">
+          <label data-mode-field="meal">특근 인정시간<input id="mealMinHours" type="number" min="0" step="0.5" value="2"><span>시간 이상</span></label>
+          <label data-mode-field="meal">특근매식비 단가<input id="mealRate" type="number" min="0" step="100" value="9000"><span>원</span></label>
+          <label data-mode-field="travel" data-travel-section="local" class="hidden">근무지 내 4시간 미만<input id="localShortRate" type="number" min="0" step="1000" value="10000"><span>원</span></label>
+          <label data-mode-field="travel" data-travel-section="local" class="hidden">근무지 내 4시간 이상<input id="localLongRate" type="number" min="0" step="1000" value="20000"><span>원</span></label>
+          <label data-mode-field="travel" data-travel-section="local" class="hidden">근무지 내 공용차량 감액<input id="publicVehicleDeduction" type="number" min="0" step="1000" value="10000"><span>원</span></label>
+        </div>
+
+        <details id="externalTravelSettings" class="external-travel-settings hidden" data-mode-field="travel" data-travel-section="external">
+          <summary>근무지 외 출장 — 항목별 지급액·증빙 연결</summary>
+          <p>일비·식비·숙박비·운임을 각각 비교합니다. 공용차량 이용 시에는 이용일의 일비만 50% 지급하며, 식비나 총액을 일괄 감액하지 않습니다.</p>
+          <div class="mapping-grid">
+            <label>출장일수 열<select id="tripDaysColumnSelect"></select></label>
+            <label>숙박일수 열 (당일은 0)<select id="tripNightsColumnSelect"></select></label>
+            <label>여비 지급등급 열 (제1호/제2호)<select id="travelGradeColumnSelect"></select></label>
+            <label>공용차량 이용일수 열<select id="publicVehicleDaysColumnSelect"></select></label>
+            <label>일비 실제액 열<select id="dailyAmountColumnSelect"></select></label>
+            <label>식비 실제액 열<select id="mealAmountColumnSelect"></select></label>
+            <label>숙박비 실제액 열<select id="lodgingAmountColumnSelect"></select></label>
+            <label>운임 실제액 열<select id="fareAmountColumnSelect"></select></label>
+            <label>식비 공제액 열 (없으면 0)<select id="mealDeductionColumnSelect"></select></label>
+            <label>운임 증빙 인정액 열 (없으면 0)<select id="fareEvidenceColumnSelect"></select></label>
+            <label>밤별 숙박 증빙액 열<select id="lodgingEvidenceColumnSelect"></select></label>
+            <label>숙박지역 열 (서울/광역시/기타)<select id="lodgingRegionColumnSelect"></select></label>
+            <label>예외·특례 사항 열 (없음/N 또는 사유)<select id="travelExceptionColumnSelect"></select></label>
+          </div>
+          <label class="grade-default">지급등급 열이 없는 경우의 공통 적용 등급
+            <select id="externalGradeDefault">
+              <option value="">미지정 — 자료 확인 필요로 표시</option>
+              <option value="2">제2호 (해당자 확인 후 선택)</option>
+              <option value="1">일반 제1호 (대통령·국무총리 등 특례 제외)</option>
+            </select>
+          </label>
+          <div class="rule-values">
+            <label>1일 일비<input id="externalDailyRate" type="number" min="0" step="1000" value="25000"><span>원</span></label>
+            <label>1일 식비<input id="externalMealRate" type="number" min="0" step="1000" value="25000"><span>원</span></label>
+            <label>공용차량 이용일 일비 지급률<input id="externalVehiclePercent" type="number" min="0" max="100" value="50"><span>%</span></label>
+            <label>제2호 서울 숙박 상한<input id="lodgingSeoulCap" type="number" min="0" step="1000" value="100000"><span>원/박</span></label>
+            <label>제2호 광역시 숙박 상한<input id="lodgingMetroCap" type="number" min="0" step="1000" value="80000"><span>원/박</span></label>
+            <label>제2호 기타 숙박 상한<input id="lodgingOtherCap" type="number" min="0" step="1000" value="70000"><span>원/박</span></label>
+          </div>
+          <p class="external-evidence-help">예: 숙박 2박의 증빙액은 <b>95000;80000</b>처럼 세미콜론으로 구분합니다. 운임 인정액과 식비 공제액은 담당자가 증빙을 확인한 값이어야 합니다. 여러 숙박지역·장기체재·예외 승인은 자동 확정하지 않고 자료 확인 대상으로 남깁니다.</p>
+        </details>
+        <p class="rule-note">기본값은 교육용 기준입니다. 실제 적용 전 해당 연도 지침과 기관 내부 기준을 확인하세요.</p>
+        <p class="mode-scope-note" id="modeScopeNote">출장 식비 지급 여부가 없는 자료에서는 중복 여부를 확인할 수 없습니다. 출장비 파일과의 자동 교차 대조는 포함되지 않습니다.</p>
+      </div>
+
+      <details class="advanced">
+        <summary>검사 옵션</summary>
+        <label class="check-option">
+          <input id="patternCheck" type="checkbox" checked>
+          <span><b>주변 행과 다른 수식 패턴도 찾기</b><small>수식이 있지만 참조 위치나 계산 조건이 다른 셀을 표시합니다.</small></span>
+        </label>
+        <label class="check-option">
+          <input id="hardcodeCheck" type="checkbox" checked>
+          <span><b>수식 대신 값이 입력된 셀 찾기</b><small>계산 열에 숫자나 문자가 직접 입력된 경우를 표시합니다.</small></span>
+        </label>
+      </details>
+
+      <div class="settings-footer">
+        <div class="primary-actions">
+          <button class="primary-button" id="scanButton" type="button">수식 누락 검사하기</button>
+          <span>원본 파일은 변경하지 않습니다.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="hidden" id="resultsPanel" aria-live="polite">
+      <div class="result-heading">
+        <div>
+          <span class="step">03</span>
+          <h3>검사 결과</h3>
+          <p id="resultSummary"></p>
+        </div>
+        <div class="result-actions">
+          <button class="secondary-button" id="exportButton" type="button">검증 결과 CSV 저장</button>
+          <button class="primary-button compact" id="downloadFixedButton" type="button">선택 항목 수정본 엑셀 저장</button>
+        </div>
+      </div>
+
+      <div class="stats six">
+        <article><span>검사 행</span><strong id="scannedRowsStat">0</strong></article>
+        <article><span>검사 셀</span><strong id="checkedCellsStat">0</strong></article>
+        <article class="rule-stat"><span>규정·금액 오류</span><strong id="ruleIssuesStat">0</strong></article>
+        <article><span>자료 확인 필요</span><strong id="reviewIssuesStat">0</strong></article>
+        <article class="danger-stat"><span>확인 필요</span><strong id="issuesStat">0</strong></article>
+        <article><span>행 기준 이상 없음 비율</span><strong id="passRateStat">0%</strong></article>
+      </div>
+
+      <div class="result-panel">
+        <div class="toolbar">
+          <div class="filters" id="filterButtons">
+            <button class="filter active" data-filter="ALL" type="button">전체</button>
+            <button class="filter" data-filter="REGULATION" type="button">규정·금액</button>
+            <button class="filter" data-filter="REVIEW" type="button">자료 확인</button>
+            <button class="filter" data-filter="MISSING" type="button">수식 누락</button>
+            <button class="filter" data-filter="HARDCODE" type="button">값 입력</button>
+            <button class="filter" data-filter="MISMATCH" type="button">패턴 이상</button>
+          </div>
+          <label class="search-box">⌕ <input id="resultSearch" type="search" placeholder="직원ID, 셀 주소 검색"></label>
+        </div>
+
+        <div class="fix-toolbar" id="fixToolbar">
+          <label><input id="selectAllFixes" type="checkbox"> 수정 가능한 항목 전체 선택</label>
+          <span id="selectedFixCount">선택 0건</span>
+          <small>원본은 그대로 두고 별도 파일로 저장합니다.</small>
+        </div>
+
+        <div class="empty-result hidden" id="emptyResult">
+          <div>✓</div>
+          <strong>선택한 검사 범위에서 이상을 찾지 못했습니다.</strong>
+          <p>현재 선택한 유형과 설정으로 검사한 결과입니다. 미검사 항목은 별도로 확인하세요.</p>
+        </div>
+
+        <div class="table-wrap" id="resultTableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>수정</th><th>상태</th><th>행</th><th>직원ID/식별값</th><th>열</th><th>셀 주소</th><th>틀린 이유</th><th>근거 규정</th><th>현재 값·수식</th><th>권장 수정</th>
+              </tr>
+            </thead>
+            <tbody id="resultBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="notice">
+        <b>검사 결과는 지급 여부를 자동 결정하지 않습니다.</b>
+        <span>표시된 셀을 원자료 및 공무원 초과근무·특근매식비 지급 규정과 대조해 최종 확인하세요.</span>
+      </div>
+
+      <div class="repair-guide panel-inline">
+        <h4>수정본 저장 방식</h4>
+        <ol>
+          <li><b>수식 누락·값 덮어쓰기·패턴 이상</b>: 같은 열의 정상 수식을 해당 행 기준으로 자동 변환해 복원합니다.</li>
+          <li><b>규정·금액 오류</b>: 화면에 표시된 기대금액을 사본에 입력합니다. 같은 셀의 수식 복원보다 규정상 금액 수정을 우선합니다. 구성항목 수정 후 합계 수식은 Excel에서 재계산해야 합니다.</li>
+          <li><b>자동 수정 불가</b>: 인정시간이나 원자료가 불명확한 건은 수정하지 않고 결과표에 남깁니다.</li>
+        </ol>
+      </div>
+    </section>
+
+    </div>
+
+    <section class="guide panel">
+      <h3>이 앱이 확인하는 것</h3>
+      <div class="guide-grid">
+        <div><b>01</b><strong>지급대상 재판정</strong><p>인정시간과 출장 식비 중복 여부로 대상을 다시 확인</p></div>
+        <div><b>02</b><strong>규정상 금액 비교</strong><p>기대금액과 실제 정산액의 차이를 표시</p></div>
+        <div><b>03</b><strong>수식 이상 보조 점검</strong><p>누락·값 덮어쓰기·다른 수식 패턴을 추가 확인</p></div>
+        <div><b>04</b><strong>근거 있는 결과 저장</strong><p>현재값·기대값·검사 기준을 CSV로 저장</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>정산 규정·금액 검증기</span>
+    <span>모든 처리는 사용자의 PC에서만 수행됩니다.</span>
+  </footer>
+
+  <dialog class="regulation-dialog" id="regulationDialog" aria-labelledby="regulationDialogTitle" aria-describedby="regulationDialogNotice">
+    <div class="regulation-dialog-header">
+      <div>
+        <span class="kicker">근거 원문 확인</span>
+        <h3 id="regulationDialogTitle"></h3>
+      </div>
+      <button class="icon-button" id="closeRegulationDialog" type="button" aria-label="근거 원문 팝업 닫기" autofocus>×</button>
+    </div>
+    <p class="regulation-dialog-citation" id="regulationDialogCitation"></p>
+    <p class="regulation-dialog-meta" id="regulationDialogMeta"></p>
+    <div class="offline-document-controls">
+      <label>저장된 규정 선택<select id="regulationDocumentSelect"></select></label>
+      <div class="offline-page-controls">
+        <button type="button" class="secondary-button" id="regulationPagePrevious" aria-label="이전 원문 미리보기 페이지">←</button>
+        <label>미리보기 페이지<select id="regulationPageSelect"></select></label>
+        <button type="button" class="secondary-button" id="regulationPageNext" aria-label="다음 원문 미리보기 페이지">→</button>
+      </div>
+      <button class="secondary-button" id="regulationPdfToggle" type="button">전체 PDF 보기</button>
+    </div>
+    <p class="offline-page-label" id="regulationPageLabel"></p>
+    <div class="offline-original-page" id="regulationOriginalPage">
+      <img id="regulationPageImage" alt="저장된 규정 원문의 해당 페이지">
+      <iframe id="regulationPdfFrame" class="hidden" title="오프라인 규정 원문 PDF"></iframe>
+    </div>
+    <details class="regulation-excerpt" id="regulationExcerpt">
+      <summary>관련 조항 텍스트 발췌도 확인하기</summary>
+      <div id="regulationDialogSections"></div>
+    </details>
+    <p class="regulation-dialog-notice" id="regulationDialogNotice">사용자가 첨부한 HWP·HWPX 원본을 PDF로 변환한 사본과 해당 페이지 이미지입니다. 모두 앱 폴더에 저장되어 인터넷 없이 열립니다. 표시된 쪽수는 PDF 기준으로 책자에 인쇄된 쪽수와 다를 수 있습니다. 최신 개정과 기관 내부지침의 적용 여부는 별도로 확인하세요.</p>
+    <a class="regulation-source-link" id="regulationDialogSource" target="_blank" rel="noopener noreferrer">저장된 전체 PDF를 새 창에서 열기 ↗</a>
+  </dialog>
+
+  <script src="vendor/xlsx.full.min.js"></script>
+  <script src="formula-audit.js?v=20261022-travel2"></script>
+  <script src="regulation-texts.js"></script>
+  <script src="regulation-documents.js"></script>
+  <script src="app.js?v=20261022-scroll850"></script>
+  <script src="effects.js?v=20261022-scan1500"></script>
+</body>
+</html>
