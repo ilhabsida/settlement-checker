@@ -93,7 +93,7 @@
     $("#auditModeHint").textContent = mode.hint;
     $("#modeScopeNote").textContent = mode.scope;
     $("#scanButton").textContent = `${mode.label} 정산 검사하기`;
-    $("#sampleButton").textContent = `${mode.label} 샘플 받기`;
+    $("#sampleButton").textContent = "테스트용 정산 샘플 엑셀 받기";
     updateTravelScopeUi();
   }
 
