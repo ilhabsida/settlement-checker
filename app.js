@@ -724,6 +724,10 @@
 
       // 같은 셀에서는 확인된 규정상 금액을 다수 수식 패턴보다 우선한다.
       const fixes = new Map();
+      const changedCells = new Map();
+      function markChanged(sheetName, address) {
+        changedCells.set(sheetName + "!" + address, { sheetName, address });
+      }
       for (const issue of selected) {
         const key = issue.sheetName + "!" + issue.address;
         const current = fixes.get(key);
@@ -734,6 +738,8 @@
         const sheet = workbook.Sheets[issue.sheetName];
         if (!sheet) continue;
         const cell = sheet[issue.address] || {};
+        const oldFormula = cell.f;
+        const oldValue = cell.v;
         delete cell.w;
         if (issue.fixType === "FORMULA") {
           cell.f = issue.fixValue;
@@ -745,6 +751,7 @@
           cell.v = Number(issue.fixValue);
         }
         sheet[issue.address] = cell;
+        if (oldFormula !== cell.f || oldValue !== cell.v) markChanged(issue.sheetName, issue.address);
       }
 
       // 항목 금액을 수정했으면 단순 SUM 합계의 저장값도 함께 갱신한다.
@@ -762,7 +769,9 @@
             if (total && total.f && total.f.replace(/\s+/g, "").toUpperCase() === sumFormula) {
               const values = componentColumns.map((col) => sheet[FormulaAudit.encodeAddress(row - 1, col)]?.v);
               if (values.every((value) => typeof value === "number" && Number.isFinite(value))) {
-                total.v = values.reduce((a, b) => a + b, 0);
+                const newTotal = values.reduce((a, b) => a + b, 0);
+                if (total.v !== newTotal) markChanged(state.results.sheetName, FormulaAudit.encodeAddress(row - 1, totalColumn));
+                total.v = newTotal;
                 total.t = "n";
                 delete total.w;
               }
@@ -772,9 +781,23 @@
       }
 
       const originalExtension = (state.file.name.match(/\.([^.]+)$/) || ["", "xlsx"])[1].toLowerCase();
-      const bookType = ["xlsx", "xlsm", "xlsb"].includes(originalExtension) ? originalExtension : "xlsx";
+      // 색상 표시가 가능한 OOXML 형식으로 내보낸다. 매크로가 있으면 XLSM을 사용한다.
+      const bookType = originalExtension === "xlsm" || workbook.vbaraw ? "xlsm" : "xlsx";
       const baseName = state.file.name.replace(/\.[^.]+$/, "");
-      XLSX.writeFile(workbook, `${baseName}_수정본.${bookType}`, { bookType });
+      const bytes = XLSX.write(workbook, { type: "array", bookType });
+      const styled = ExcelHighlight.apply(bytes, changedCells.values());
+      const contentType = bookType === "xlsm"
+        ? "application/vnd.ms-excel.sheet.macroEnabled.12"
+        : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+      const blob = new Blob([styled], { type: contentType });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${baseName}_수정본.${bookType}`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (error) {
       alert("수정본을 만들지 못했습니다: " + error.message);
     }

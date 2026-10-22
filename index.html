@@ -304,6 +304,7 @@
         <ol>
           <li><b>수식 누락·값 덮어쓰기·패턴 이상</b>: 같은 열의 정상 수식을 해당 행 기준으로 자동 변환해 복원합니다.</li>
           <li><b>규정·금액 오류</b>: 화면에 표시된 기대금액을 사본에 입력합니다. 같은 셀의 수식 복원보다 규정상 금액 수정을 우선합니다. 구성항목 수정 후 합계 수식은 Excel에서 재계산해야 합니다.</li>
+          <li><b>수정 셀 표시</b>: 실제로 변경한 셀과 함께 갱신된 합계는 연한 노란색 배경·빨간 글씨로 표시합니다. 수정본은 XLSX(매크로는 XLSM)로 저장합니다.</li>
           <li><b>자동 수정 불가</b>: 인정시간이나 원자료가 불명확한 건은 수정하지 않고 결과표에 남깁니다.</li>
         </ol>
       </div>
@@ -360,10 +361,12 @@
   </dialog>
 
   <script src="vendor/xlsx.full.min.js"></script>
+  <script src="vendor/fflate.min.js"></script>
+  <script src="excel-highlight.js?v=20261022-highlight"></script>
   <script src="formula-audit.js?v=20261022-travel2"></script>
   <script src="regulation-texts.js"></script>
   <script src="regulation-documents.js"></script>
-  <script src="app.js?v=20261022-scroll850"></script>
+  <script src="app.js?v=20261022-highlight"></script>
   <script src="effects.js?v=20261022-scan1500"></script>
 </body>
 </html>

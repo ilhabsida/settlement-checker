@@ -11,6 +11,7 @@
 !/app.js
 !/effects.js
 !/formula-audit.js
+!/excel-highlight.js
 !/regulation-texts.js
 !/regulation-documents.js
 !/test-formula-audit.js
@@ -22,6 +23,8 @@
 !/vendor/
 !/vendor/xlsx.full.min.js
 !/vendor/LICENSE.txt
+!/vendor/fflate.min.js
+!/vendor/fflate-LICENSE.txt
 
 !/일러스트/
 !/일러스트/megane_hikaru_man.png

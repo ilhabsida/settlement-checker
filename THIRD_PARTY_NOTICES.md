@@ -8,6 +8,15 @@
 - 라이선스: Apache License 2.0
 - 라이선스 전문: `vendor/LICENSE.txt`
 
+## fflate
+
+- 파일: `vendor/fflate.min.js`
+- 버전: 0.8.2
+- 출처: https://github.com/101arrowz/fflate
+- 라이선스: MIT
+- 라이선스 전문: `vendor/fflate-LICENSE.txt`
+- 용도: 수정본 엑셀의 ZIP/XML에 수정 셀 색상을 기록하는 오프라인 처리
+
 ## 규정 원문 사본
 
 `복무규정/원문PDF`와 `복무규정/페이지`에는 사용자가 제공한 공개 규정 파일을 변환한 사본이 포함됩니다.
