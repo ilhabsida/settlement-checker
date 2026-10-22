@@ -2,6 +2,8 @@
 
 출장·초과근무·특근매식비의 **규정상 지급대상과 기대금액을 다시 계산해 실제 정산액과 비교**하고, 수식 누락·값 덮어쓰기·수식 패턴 이상을 보조 점검하는 오프라인 브라우저 앱입니다.
 
+**웹 실행 주소:** https://settlement-checker-mocha.vercel.app/
+
 ## 실행 방법
 
 1. `index.html`을 Chrome 또는 Edge로 엽니다.
@@ -124,6 +126,8 @@
 ## Vercel 배포
 
 프레임워크와 빌드 과정이 없는 정적 HTML 앱으로 배포합니다. `vercel.json`에 설정이 포함되어 있으며, `.vercelignore`는 실행 파일과 공개 규정 사본만 배포하도록 제한합니다. `.vercel` 연결 설정과 로그인 정보는 GitHub 및 웹 배포에 포함하지 않습니다.
+
+배포 시에는 GitHub의 `main`을 깨끗한 폴더에 복제해 사용했습니다. 현재 프로덕션 사이트는 Vercel CLI로 배포되어 있습니다. GitHub 푸시 시 자동 배포하는 Git 연동은 GitHub/Vercel 접근 권한을 추가 연결해야 합니다.
 
 ```powershell
 vercel login
